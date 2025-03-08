@@ -6,18 +6,17 @@ import (
 	"github.com/ciaronhowell/snakelet"
 )
 
-type Foo struct {
-	FooBar string `snakelet:"required,min=6"`
-	Bar string
-	Baz string `snakelet:""`
+type AppConfig struct {
+	FooBar string `snakelet:"required"`
+	Bar    int
+	Baz    bool
 }
 
 func main() {
-	test := Foo{}
-	if err := snakelet.Unmarshal(&test); err != nil {
+	appCfg := AppConfig{}
+	if err := snakelet.Unmarshal(&appCfg); err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("updated struct: %v", test)
-
+	fmt.Printf("updated struct: %v", appCfg)
 }
