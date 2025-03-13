@@ -12,7 +12,6 @@ import (
 
 func Unmarshal(structPtr interface{}) error {
 	// TODO: Make sure we have address rather than obj
-
 	tags := internal.ExtractTags(structPtr)
 	fmt.Printf("tags: %v\n", tags)
 

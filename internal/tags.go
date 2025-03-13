@@ -17,9 +17,10 @@ const (
 
 func (properties) propKeys() []string {
 	return []string{
-		"required",
-		"min",
-		"max",
+		"required", // INFO: Pointers could be used to show optional values????
+		// "min",
+		// "max",
+		"name",
 	}
 }
 
