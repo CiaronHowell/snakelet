@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -28,10 +29,10 @@ func parseEnvVarValue(envVarValue string, fieldKind reflect.Kind) (interface{}, 
 	}
 }
 
-func SetStructValues(foo interface{}, envVars map[string]string) {
+func SetStructValues(foo interface{}, envVars map[string]string) error {
 	val := reflect.ValueOf(foo)
 	if val.Kind() != reflect.Pointer {
-		panic("need to pass a pointer")
+		return errors.New("struct passed is not a pointer")
 	}
 	val = val.Elem()
 
@@ -44,7 +45,6 @@ func SetStructValues(foo interface{}, envVars map[string]string) {
 		}
 
 		upperSnakeCaseName := toUpperSnakeCase(name)
-
 		fmt.Printf("checking for env var: %s\n", upperSnakeCaseName)
 		envVarVal, ok := envVars[upperSnakeCaseName]
 		if !ok {
@@ -54,8 +54,7 @@ func SetStructValues(foo interface{}, envVars map[string]string) {
 		fieldVal := val.Field(i)
 		parsedVal, err := parseEnvVarValue(envVarVal, fieldVal.Kind())
 		if err != nil {
-			fmt.Println(err)
-			continue
+			return fmt.Errorf("failed to parse value for %s: %w", upperSnakeCaseName, err)
 		}
 
 		parsedValReflect := reflect.ValueOf(parsedVal)
@@ -67,4 +66,6 @@ func SetStructValues(foo interface{}, envVars map[string]string) {
 		}
 		fmt.Printf("setting env var: %s = %s\n", upperSnakeCaseName, envVarVal)
 	}
+
+	return nil
 }

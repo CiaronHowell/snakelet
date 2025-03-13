@@ -6,7 +6,7 @@ A lightweight, easy-to-use environment variable loader.
 
 ### Critical
 
-- [ ] Propagate parsing error to `Unmarshal` func
+- [x] Propagate parsing error to `Unmarshal` func
 - [ ] Differentiate between unset env var and parsing errors
 - [ ] Implement a way to set custom env var name
 - [ ] Handle nested structs
