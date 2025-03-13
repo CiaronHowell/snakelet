@@ -7,16 +7,34 @@ import (
 )
 
 type AppConfig struct {
-	FooBar string `snakelet:"required"`
-	Bar    int
-	Baz    bool
+	Port       int
+	ApiBaseUrl string
+	RunProd     bool
+}
+
+func getConfig() (*AppConfig, error) {
+	appCfg := AppConfig{}
+	if err := snakelet.Unmarshal(&appCfg); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal app config: %w", err)
+	}
+
+	// Further custom code e.g., advanced checks, if needed... 
+
+	return &appCfg, nil
 }
 
 func main() {
-	appCfg := AppConfig{}
-	if err := snakelet.Unmarshal(&appCfg); err != nil {
+	appCfg, err := getConfig()
+	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("updated struct: %v", appCfg)
+	env := "development"
+	if appCfg.RunProd {
+		env = "production"
+	}
+
+	fmt.Printf("running as %s\n", env)
+	fmt.Printf("running on port %d\n", appCfg.Port)
+	fmt.Printf("sending POST request to %s/foo/bar\n", appCfg.ApiBaseUrl)
 }
