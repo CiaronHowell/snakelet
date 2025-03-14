@@ -8,7 +8,7 @@ A lightweight, easy-to-use environment variable loader.
 
 - [x] Propagate parsing error to `Unmarshal` func
 - [ ] Differentiate between unset env var and parsing errors
-- [ ] Implement a way to set custom env var name
+- [x] Implement a way to set custom env var name
 - [ ] Handle nested structs
   - Could use name of struct as a prefix for fields of the nested struct but variable names could get v long if we use the name of the struct. That said, if we go without a prefix, names could clash.
 
