@@ -1,10 +1,10 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
-	"unicode"
 )
 
 type properties int
@@ -17,7 +17,7 @@ const (
 
 func (properties) propKeys() []string {
 	return []string{
-		"required", // INFO: Pointers could be used to show optional values????
+		// "required", // INFO: Pointers could be used to show optional values????
 		// "min",
 		// "max",
 		"name",
@@ -58,17 +58,20 @@ func ExtractProps(tags string) (map[string]string, error) {
 	return props, nil
 }
 
-func ExtractTags(foo interface{}) map[int]string {
-	val := reflect.ValueOf(foo)
-	if val.Kind() == reflect.Pointer {
-		// Get value from the pointer
-		val = val.Elem()
+func ParseGoTags(structPtr interface{}) (map[int]string, error) {
+	val := reflect.ValueOf(structPtr)
+	if val.Kind() != reflect.Pointer {
+		return nil, errors.New("struct passed needs to be a pointer")
 	}
+
+	// Get value from the pointer
+	val = val.Elem()
 
 	tags := make(map[int]string)
 	for i := 0; i < val.NumField(); i++ {
 		tag := val.Type().Field(i).Tag.Get("snakelet")
 
+		// If no snakelet tag is available, `tag` should be an empty string
 		if tag == "" {
 			continue
 		}
@@ -76,33 +79,5 @@ func ExtractTags(foo interface{}) map[int]string {
 		tags[i] = tag
 	}
 
-	return tags
-}
-
-func toUpperSnakeCase(s string) string {
-	upperSnakeCase := []rune{}
-	for i, c := range s {
-		if i != 0 && unicode.IsUpper(c) {
-			upperSnakeCase = append(upperSnakeCase, '_')
-		}
-
-		upperSnakeCase = append(upperSnakeCase, unicode.ToUpper(c))
-	}
-
-	return string(upperSnakeCase)
-}
-
-func ParseFieldNames(foo interface{}) []string {
-	val := reflect.ValueOf(foo)
-	if val.Kind() == reflect.Pointer {
-		val = val.Elem()
-	}
-
-	parsedFieldNames := []string{}
-	for i := 0; i < val.NumField(); i++ {
-		name := val.Type().Field(i).Name
-		parsedFieldNames = append(parsedFieldNames, toUpperSnakeCase(name))
-	}
-
-	return parsedFieldNames
+	return tags, nil
 }
